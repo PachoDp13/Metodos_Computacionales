@@ -26,73 +26,77 @@ void EndLine(){
         std::cout<<std::endl;
 }
 
-
 int main(int argc, char *argv[]){
 
 
-	Particle *p1 = new Particle(2,3,2,3.3,5,6,0);
-	p1->SetWallLimits(-50,50,-50,50);
 
 
 
-	// Evolucion 
-	double time = 0.;
-	double deltat = 0.0001;
 
-	double tmax = std::stof(argv[1]);
-	int it = 0;
-
-        int films = 5000;
+	
+	//Parámetros de entrada:
+	int NParticles = std::stof(argv[1]);
+	double tmax = std::stof(argv[2]);
+	double deltat = std::stof(argv[3]);
+	double limits = std::stof(argv[4]);
+	int films = std::stof(argv[5]);
 
         
-	int NParticles = 20;
 
 	srand48(0);
 
 
 	Particle *AllParticles[NParticles];
 
-	for(int i = 0; i< NParticles; i++){
-		Particle *p = new Particle(2*drand48(),3*drand48(),2*drand48(),3.3,5,6,i);
-		p->SetWallLimits(-50,50,-50,50);
-		AllParticles[i] = p;
+	if (NParticles ==2)
+	{
+		Particle *p1 = new Particle(-10.0,4.0,40.0,0.0,10.0,5.0,0);
+		p1->SetWallLimits(-limits,limits,-limits,limits);
+		Particle *p2 = new Particle(0.0,0.0,0.0,0.0,10.0,5.0,1);
+		p2->SetWallLimits(-limits,limits,-limits,limits);
+		AllParticles[0] = p1;
+		AllParticles[1] = p2;
 	}
+	else{	
+		for(int i = 0; i< NParticles; i++)
+		{
+			Particle *p = new Particle(2*drand48(),3*drand48(),2*drand48(),3.3,5,6,i);
+			p->SetWallLimits(-limits,limits,-limits,limits);
+			AllParticles[i] = p;
+		}
+		}
 
 
-	// Evolucion
-	
+	// Evolucion 
+	double time = 0.;
+	int it = 0;
 	// 
 	
-	while (time < tmax){
-
-        if(it%films == 0){
-	 StartAnim();
-	StartLine();
-	}
-
-	for(int i = 0; i< NParticles; i++){
-		
-		AllParticles[i]->Move(time,deltat,it);
-		AllParticles[i]->CheckWallLimits();
-	
-
-	//p1->Move(time,deltat,it);
-	//p1->CheckWallLimits();
+	while (time < tmax)
+	{
 
         if(it%films == 0)
-	{
-	//p1->Print();
-	
-	AllParticles[i]->Print();
-	}
+		{
+	 		StartAnim();
+			StartLine();
+		}
 
-	}
+		for(int i = 0; i< NParticles; i++)
+		{
+			AllParticles[i]->Move(time,deltat,it);
+			AllParticles[i]->CheckWallLimits();
 
-	time += deltat;
-	it ++;
+        	if(it%films == 0)
+			{	
+				AllParticles[i]->Print();
+			}
+
+		}
+
+		time += deltat;
+		it ++;
         if(it%films == 0)	
-	EndLine();
+			EndLine();
 	}
-	
 	return 0;
 }	
