@@ -1,1 +1,2 @@
-./Colisiones 10000000 | gnuplot
+./Colisiones 2000 | gnuplot
+

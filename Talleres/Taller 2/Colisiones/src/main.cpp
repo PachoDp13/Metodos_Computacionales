@@ -2,13 +2,19 @@
 
 void StartAnim(){
 
-  std::cout<<"unset key"<<std::endl;
-  std::cout<<"set xrange [-50:50]"<<std::endl;
-  std::cout<<"set yrange [-50:50]"<<std::endl;
-  std::cout<<"set size ratio -1"<<std::endl;
-  std::cout<<"set parametric"<<std::endl;
-  std::cout<<"set trange [0:7]"<<std::endl;
-  std::cout<<"set isosamples 12"<<std::endl;
+  //std::cout<<"set terminal gif transparent animate nooptimize delay 10 size 300,300 font 'Helvetica-Bold,10'"<<std::endl;
+  
+  	
+	std::cout<<"set terminal pngcairo"<<std::endl;
+    std::cout<<"set output 'Colisiones.png'"<<std::endl;
+	std::cout<<"unset key"<<std::endl;
+  	std::cout<<"set xrange [-50:50]"<<std::endl;
+  	std::cout<<"set yrange [-50:50]"<<std::endl;
+ 	std::cout<<"set size ratio -1"<<std::endl;
+  	std::cout<<"set parametric"<<std::endl;
+  	std::cout<<"set trange [0:7]"<<std::endl;
+  	std::cout<<"set isosamples 12"<<std::endl;
+
 
 }
 
@@ -54,14 +60,18 @@ int main(int argc, char *argv[]){
 
 
 	// Evolucion
+	
+	// 
+	
 	while (time < tmax){
 
         if(it%films == 0){
-	StartAnim();
+	 StartAnim();
 	StartLine();
 	}
 
 	for(int i = 0; i< NParticles; i++){
+		
 		AllParticles[i]->Move(time,deltat,it);
 		AllParticles[i]->CheckWallLimits();
 	
@@ -83,6 +93,6 @@ int main(int argc, char *argv[]){
         if(it%films == 0)	
 	EndLine();
 	}
-
+	
 	return 0;
 }	
