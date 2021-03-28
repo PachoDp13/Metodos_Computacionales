@@ -24,7 +24,7 @@ class Particle{
 
 		void Move(double t_, double deltat, int it);
 
-		bool Intersects(Particle *p_);
+		double Interaccion(Particle *p_);
 		
 
 		double PosX();
@@ -49,7 +49,6 @@ class Particle{
 		double m,r;
 
 		int ID;
-
 		std::ofstream *File;
 
 		double Wxmin,Wxmax;

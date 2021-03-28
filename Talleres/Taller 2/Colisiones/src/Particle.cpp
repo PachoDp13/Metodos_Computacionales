@@ -72,18 +72,19 @@ void Particle::Move(double t_, double deltat, int it)
 	vy += ay*deltat;
 }
 
-bool Particle::Intersects(Particle *p_)
+double Particle::Interaccion(Particle *p_)
 {
-    double dx = abs(x - p_->PosX());
-    double dy = abs(y - p_->PosY());
-    double d = sqrt(dx * dx + dy * dy);
+    double dx = x - p_->PosX();
+    double dy = y - p_->PosY();
+    double d = sqrt(pow(dx,2) + pow(dy,2));
+	
     if (d <= (r + p_->Radius()) )
 	{
-		return true;
+		return K*(pow(d,5));
 	}
 	else
 	{
-		return false;
+		return 0;
 	}
 }
 
@@ -98,27 +99,36 @@ void Particle::Colision(Particle *p_, bool state)
 	//double vx = (m1 - m2) * vx1 / (m1 + m2) + 2 * m2 * vx2 / (m1 + m2);
 	//double vy = (m1 - m2) * vy1 / (m1 + m2) + 2 * m2 * vy2 / (m1 + m2);
 
-	double dx = abs(x - p_->PosX());
-    double dy = abs(y - p_->PosY());
-    double d = sqrt(dx * dx + dy * dy);
 
 	double rx = x - p_->PosX();
 	double ry = y - p_->PosY();
 
-	ax += K*(pow(d,5))*rx;
-	ay += K*(pow(d,5))*ry;
+	double norm = (sqrt(pow(ry,2) + pow(rx,2)));
+
+	double interaccion = Interaccion(p_);
 
 	if(state)
 	{
 		Colision(this, false);
 	}
+	if (norm != 0 and norm != 0)
+	{
+		ax += interaccion*(rx/norm)*(1/m);
+		ay += interaccion*(ry/norm)*(1/m);
+	}
+	else
+	{
+		ax += interaccion*(rx/m);
+		ay += interaccion*(ry/m);
+	}
+	
 }
 
 void Particle::RevisarColisiones(Particle *particles[], int NParticles_)
 {
 	for (int i = 0; i< NParticles_; i++)
 	{	
-		if(particles[i] ->darID() != ID and Intersects(particles[i]))
+		if(particles[i] ->darID() != ID)
 		{
 			Colision(particles[i], true);
 		}
