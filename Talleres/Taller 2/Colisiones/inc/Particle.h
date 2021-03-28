@@ -35,6 +35,8 @@ class Particle{
 		double Mym();
 		double MyK();
 		int darID();
+		
+		void RevisarColisiones(Particle *particles[], int NParticles_);
 
 	private:
 
@@ -55,7 +57,6 @@ class Particle{
 
 		double K = 100.;
 		void Colision(Particle *p_, bool state);
-		void RevisarColisiones(Particle *particles[], int NParticles_);
 
 	protected:
 

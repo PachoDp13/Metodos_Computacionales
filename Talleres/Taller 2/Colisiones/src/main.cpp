@@ -85,6 +85,7 @@ int main(int argc, char *argv[]){
 		{
 			AllParticles[i]->Move(time,deltat,it);
 			AllParticles[i]->CheckWallLimits();
+			AllParticles[i]->RevisarColisiones(AllParticles, NParticles);
 
         	if(it%films == 0)
 			{	
