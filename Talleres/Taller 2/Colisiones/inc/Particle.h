@@ -25,19 +25,13 @@ class Particle{
 		void Move(double t_, double deltat, int it);
 
 		double Interaccion(Particle *p_);
-		
-
 		double PosX();
 		double PosY();
 		double darVx();
 		double darVy();
 		double Radius();
-		double Mym();
-		double MyK();
-		int darID();
-		
-		void RevisarColisiones(Particle *particles[], int NParticles_);
-
+		double darM();
+		void Colision(Particle *p_, bool state);
 	private:
 
 		double x,y;
@@ -55,7 +49,7 @@ class Particle{
 		double Wymin,Wymax;
 
 		double K = 100.;
-		void Colision(Particle *p_, bool state);
+		
 
 	protected:
 

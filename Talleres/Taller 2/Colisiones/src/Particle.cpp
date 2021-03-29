@@ -32,27 +32,21 @@ double Particle::Radius()
 {
 	return r;
 }
-double Particle::MyK()
-{
-	return K;
-}
-double Particle::Mym()
+double Particle::darM()
 {
 	return m;
 }
-int Particle::darID()
-{
-	return ID;
-}
 
-void Particle::SetWallLimits(double Wxmin_, double Wxmax_, double Wymin_, double Wymax_){
+void Particle::SetWallLimits(double Wxmin_, double Wxmax_, double Wymin_, double Wymax_)
+{
 Wxmin = Wxmin_;
 Wxmax = Wxmax_;
 Wymin = Wymin_;
 Wymax = Wymax_;
 }
 
-void Particle::CheckWallLimits(){
+void Particle::CheckWallLimits()
+{
 
 	if( (x+r) >= Wxmax || (x-r) <= Wxmin ) vx = -vx;
 	if( (y+r) >= Wymax || (y-r) <= Wymin ) vy = -vy;
@@ -90,49 +84,26 @@ double Particle::Interaccion(Particle *p_)
 
 void Particle::Colision(Particle *p_, bool state)
 {
-	//double m1 = p_1->Mym();
-	//double m2 = p_2->Mym();
-	//double vx1 = p_1->darVx();
-	//double vx2 = p_2->darVx();
-	//double vy1 = p_1->darVy();
-	//double vy2 = p_2->darVy();
-	//double vx = (m1 - m2) * vx1 / (m1 + m2) + 2 * m2 * vx2 / (m1 + m2);
-	//double vy = (m1 - m2) * vy1 / (m1 + m2) + 2 * m2 * vy2 / (m1 + m2);
-
-
 	double rx = x - p_->PosX();
 	double ry = y - p_->PosY();
-
 	double norm = (sqrt(pow(ry,2) + pow(rx,2)));
-
-	double interaccion = Interaccion(p_);
-
 	if(state)
 	{
-		Colision(this, false);
+		p_->Colision(this, false);
 	}
+	double interaccion = Interaccion(p_);
 	if (norm != 0 and norm != 0)
 	{
-		ax += interaccion*(rx/norm)*(1/m);
-		ay += interaccion*(ry/norm)*(1/m);
+		double coef = pow(norm*m, -1);
+		ax = interaccion*rx*coef;
+		ay = interaccion*ry*coef;
 	}
 	else
 	{
-		ax += interaccion*(rx/m);
-		ay += interaccion*(ry/m);
+		double coef = pow(m,-1);
+		ax = interaccion*coef;
+		ay = interaccion*coef;
 	}
 	
 }
-
-void Particle::RevisarColisiones(Particle *particles[], int NParticles_)
-{
-	for (int i = 0; i< NParticles_; i++)
-	{	
-		if(particles[i] ->darID() != ID)
-		{
-			Colision(particles[i], true);
-		}
-	}
-
-	}
 

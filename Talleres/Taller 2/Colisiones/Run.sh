@@ -1,2 +1,4 @@
-./Colisiones 50, 1, 0.0001, 50, 5 | gnuplot
+make clean
+make
+./Colisiones 2, 10, 0.0001, 50, 100 | gnuplot
 
