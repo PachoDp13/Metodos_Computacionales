@@ -48,7 +48,16 @@ void PlotGraph()
   	std::cout<<"set yrange [*:*]"<<std::endl;
  	std::cout<<"set size ratio 1"<<std::endl;
   	std::cout<<"set isosamples 12"<<std::endl;
-	std::cout<<"plot 'data/data.dat' using 1:3 with points pointtype 7 pointsize 1"<<std::endl;
+	std::cout<<"plot 'data/data.dat' using 1:3 with dots"<<std::endl;
+	std::cout<<"set terminal pngcairo"<<std::endl;
+    std::cout<<"set output 'data/EnergíaK.png'"<<std::endl;
+	std::cout<<"unset key"<<std::endl;
+	std::cout<<"set title 'Energía cinética (E_{k})'"<<std::endl;
+	std::cout<<"set xrange [*:*]"<<std::endl;
+  	std::cout<<"set yrange [*:*]"<<std::endl;
+ 	std::cout<<"set size ratio 1"<<std::endl;
+  	std::cout<<"set isosamples 12"<<std::endl;
+	std::cout<<"plot 'data/data.dat' using 1:4 with dots"<<std::endl;
 	 
 
 }
@@ -90,6 +99,7 @@ int main(int argc, char *argv[]){
 	// Evolucion 
 	double time = 0.;
 	int it = 0;
+	deltat = deltat/films;
 	// 
 	StartAnim(limits);
 	while (time < tmax)
@@ -116,19 +126,19 @@ int main(int argc, char *argv[]){
         	if(it%films == 0)
 			{	
 				AllParticles[i]->Print();
-				out << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << std::endl;
-				
 			}
 			
 			Px +=  AllParticles[i]->darM()*AllParticles[i]->darVx() ;
 			Py +=  AllParticles[i]->darM()*AllParticles[i]->darVy() ;
-			Ek += (0.5)*(AllParticles[i]->darM())*(pow(AllParticles[i]->darVy(),2)+pow(AllParticles[i]->darVy(),2));
+			Ek += (0.5)*(AllParticles[i]->darM())*(pow(AllParticles[i]->darVx(),2)+pow(AllParticles[i]->darVy(),2));
 		}
 		time += deltat;
 		it ++;
-        if(it%films == 0)	
+        if(it%films == 0)
+		{
 			EndLine();
-
+			out << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << std::endl;
+		}
 		 
 	}
 
