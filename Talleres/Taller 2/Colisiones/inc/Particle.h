@@ -31,7 +31,8 @@ class Particle{
 		double darVy();
 		double Radius();
 		double darM();
-		void Colision(Particle *p_, bool state);
+		int darID();
+		void UpdateAceleracion(Particle *AllParticles[], int NParticles);
 	private:
 
 		double x,y;

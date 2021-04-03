@@ -1,6 +1,8 @@
 #include <../inc/Particle.h>
 #include<iostream>
 #include<fstream>
+#include <iterator>
+
 
 void StartAnim(double limits)
 {
@@ -69,7 +71,7 @@ int main(int argc, char *argv[]){
 	// 
 	StartAnim(limits);
 	while (time < tmax)
-	{	
+	{
 		double Ek = 0;
 		double Ep = 0;
 		double Px = 0;
@@ -78,21 +80,23 @@ int main(int argc, char *argv[]){
 		{
 			StartLine();
 		}
+		for(int i = 0; i< NParticles; i++)
+		{
+			AllParticles[i]->UpdateAceleracion(AllParticles, NParticles);
+		}
+
 
 		for(int i = 0; i< NParticles; i++)
-		{	
-			AllParticles[i]->Move(time,deltat,it);
+		{		
 			AllParticles[i]->CheckWallLimits();
-			for(int j = i+1; j< NParticles; j++)
-			{
-				AllParticles[i]->Colision(AllParticles[j], true);
-			}			    			
+			AllParticles[i]->Move(time,deltat,it);		    			
 	
         	if(it%films == 0)
 			{	
 				AllParticles[i]->Print();
+				
 			}
-
+			
 			Px +=  AllParticles[i]->darM()*AllParticles[i]->darVx() ;
 			Py +=  AllParticles[i]->darM()*AllParticles[i]->darVy() ;
 			Ek += (0.5)*(AllParticles[i]->darM())*(pow(AllParticles[i]->darVy(),2)+pow(AllParticles[i]->darVy(),2));
@@ -102,7 +106,7 @@ int main(int argc, char *argv[]){
         if(it%films == 0)	
 			EndLine();
 
-		out << Px << " " << Py  << " " << Ek << " " << Ep << std::endl;
+		// out << Px << " " << Py  << " " << Ek << " " << Ep << std::endl;
 	}
 
 	out.close();

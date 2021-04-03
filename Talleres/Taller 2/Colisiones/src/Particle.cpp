@@ -1,4 +1,5 @@
 #include <../inc/Particle.h>
+#include <string>
 
 Particle::Particle(){
 }
@@ -36,6 +37,10 @@ double Particle::darM()
 {
 	return m;
 }
+int Particle::darID()
+{
+	return ID;
+}
 
 void Particle::SetWallLimits(double Wxmin_, double Wxmax_, double Wymin_, double Wymax_)
 {
@@ -60,19 +65,19 @@ void Particle::Print(){
 void Particle::Move(double t_, double deltat, int it)
 {
 	t = t_;
-	x += vx*deltat + 0.5*ax*pow(deltat,2);
-	y += vy*deltat + 0.5*ay*pow(deltat,2);
+	x += (vx*deltat) + (0.5*ax*pow(deltat,2));
+	y += (vy*deltat) + (0.5*ay*pow(deltat,2));
 	vx += ax*deltat;
 	vy += ay*deltat;
 }
 
 double Particle::Interaccion(Particle *p_)
 {
-    double dx = x - p_->PosX();
-    double dy = y - p_->PosY();
-    double d = sqrt(pow(dx,2) + pow(dy,2));
+    double rx = x - p_->PosX();
+    double ry = y - p_->PosY();
+    double d = sqrt(pow(rx,2) + pow(ry,2));
 	
-    if (d <= (r + p_->Radius()) )
+    if (d < (r + p_->Radius()) )
 	{
 		return K*(pow(d,5));
 	}
@@ -81,29 +86,33 @@ double Particle::Interaccion(Particle *p_)
 		return 0;
 	}
 }
-
-void Particle::Colision(Particle *p_, bool state)
-{
-	double rx = x - p_->PosX();
-	double ry = y - p_->PosY();
-	double norm = (sqrt(pow(ry,2) + pow(rx,2)));
-	if(state)
-	{
-		p_->Colision(this, false);
+void Particle::UpdateAceleracion(Particle *AllParticles[], int NParticles)
+{	
+	double new_ax = 0;
+	double new_ay = 0;
+	for(int i = 0; i< NParticles; i++)
+	{	if(AllParticles[i]->darID() != ID)
+		{
+			Particle *p_ = AllParticles[i];
+			double rx = x - p_->PosX();
+			double ry = y - p_->PosY();
+			double norm = sqrt(pow(ry,2) + pow(rx,2));
+			double interaccion = Interaccion(p_);
+			if (norm != 0 and norm != 0)
+			{
+				double coef = norm*m;
+				new_ax += interaccion*rx/coef;
+				new_ay += interaccion*ry/coef;
+			}
+			else
+			{
+				double coef = m;
+				new_ax += interaccion*rx/coef;
+				new_ay += interaccion*ry/coef;
+			}
+		}
 	}
-	double interaccion = Interaccion(p_);
-	if (norm != 0 and norm != 0)
-	{
-		double coef = pow(norm*m, -1);
-		ax = interaccion*rx*coef;
-		ay = interaccion*ry*coef;
-	}
-	else
-	{
-		double coef = pow(m,-1);
-		ax = interaccion*coef;
-		ay = interaccion*coef;
-	}
-	
+	ax = new_ax;
+	ay = new_ay;	
 }
 
