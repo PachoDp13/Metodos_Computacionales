@@ -21,18 +21,23 @@ class Particle{
 		void SetWallLimits(double Wxmin_, double Wxmax_, double Wymin_, double Wymax_);
 		void CheckWallLimits();
 		void Print();
-
-		void Move(double t_, double deltat, int it);
-
+		double K = 100.;
 		double Interaccion(Particle *p_);
-		double PosX();
-		double PosY();
-		double darVx();
-		double darVy();
-		double Radius();
-		double darM();
-		int darID();
-		void UpdateAceleracion(Particle *AllParticles[], int NParticles);
+		void Move(double t_, double deltat, int it);
+	
+		double getX();
+		double getY();
+		double getVx();
+		double getVy();
+		double getAx();
+		double getAy();
+		double getR();
+		double getM();
+		int getID();
+		void setA(double ax_ , double ay_);
+
+		
+
 	private:
 
 		double x,y;
@@ -43,13 +48,14 @@ class Particle{
 
 		double m,r;
 
+		double Ek;
+
 		int ID;
-		std::ofstream *File;
 
 		double Wxmin,Wxmax;
 		double Wymin,Wymax;
 
-		double K = 100.;
+		
 		
 
 	protected:

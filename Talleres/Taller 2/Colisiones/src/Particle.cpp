@@ -13,35 +13,47 @@ Particle::~Particle(){
 
 // Methods
 
-double Particle::PosX()
+double Particle::getX()
 {
 	return x;
 }
-double Particle::PosY()
+double Particle::getY()
 {
 	return y;
 }
-double Particle::darVx()
+double Particle::getVx()
 {
 	return vx;
 }
-double Particle::darVy()
+double Particle::getVy()
 {
 	return vy;
 }
-double Particle::Radius()
+double Particle::getAx()
+{
+	return ax;
+}
+double Particle::getAy()
+{
+	return ay;
+}
+double Particle::getR()
 {
 	return r;
 }
-double Particle::darM()
+double Particle::getM()
 {
 	return m;
 }
-int Particle::darID()
+int Particle::getID()
 {
 	return ID;
 }
-
+void Particle::setA(double ax_ , double ay_)
+{
+	ax = ax_;
+	ay = ay_;
+}
 void Particle::SetWallLimits(double Wxmin_, double Wxmax_, double Wymin_, double Wymax_)
 {
 Wxmin = Wxmin_;
@@ -73,11 +85,11 @@ void Particle::Move(double t_, double deltat, int it)
 
 double Particle::Interaccion(Particle *p_)
 {
-    double rx = x - p_->PosX();
-    double ry = y - p_->PosY();
+    double rx = x - p_->getX();
+    double ry = y - p_->getY();
     double d = sqrt(pow(rx,2) + pow(ry,2));
 	
-    if (d < (r + p_->Radius()) )
+    if (d < (r + p_->getR()) )
 	{
 		return K*(pow(d,5));
 	}
@@ -86,33 +98,5 @@ double Particle::Interaccion(Particle *p_)
 		return 0;
 	}
 }
-void Particle::UpdateAceleracion(Particle *AllParticles[], int NParticles)
-{	
-	double new_ax = 0;
-	double new_ay = 0;
-	for(int i = 0; i< NParticles; i++)
-	{	if(AllParticles[i]->darID() != ID)
-		{
-			Particle *p_ = AllParticles[i];
-			double rx = x - p_->PosX();
-			double ry = y - p_->PosY();
-			double norm = sqrt(pow(ry,2) + pow(rx,2));
-			double interaccion = Interaccion(p_);
-			if (norm != 0 and norm != 0)
-			{
-				double coef = norm*m;
-				new_ax += interaccion*rx/coef;
-				new_ay += interaccion*ry/coef;
-			}
-			else
-			{
-				double coef = m;
-				new_ax += interaccion*rx/coef;
-				new_ay += interaccion*ry/coef;
-			}
-		}
-	}
-	ax = new_ax;
-	ay = new_ay;	
-}
+
 
