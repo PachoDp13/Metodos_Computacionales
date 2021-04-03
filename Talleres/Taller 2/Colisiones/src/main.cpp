@@ -1,7 +1,6 @@
 #include <../inc/Particle.h>
 #include<iostream>
 #include<fstream>
-#include <iterator>
 
 
 void StartAnim(double limits)
@@ -11,7 +10,7 @@ void StartAnim(double limits)
 	std::cout<<"unset key"<<std::endl;
   	std::cout<<"set xrange [-"<<limits << ":"<<limits <<"]"<<std::endl;
   	std::cout<<"set yrange [-"<<limits << ":"<<limits <<"]"<<std::endl;
- 	std::cout<<"set size ratio 1"<<std::endl;
+ 	std::cout<<"set size ratio -1"<<std::endl;
   	std::cout<<"set parametric"<<std::endl;
   	std::cout<<"set trange [0:7]"<<std::endl;
   	std::cout<<"set isosamples 12"<<std::endl;
@@ -28,8 +27,30 @@ void EndLine()
 }
 double Random(double a, double b)
 {	
-	double r = ((double) rand() / (RAND_MAX));
-	return a+(b-a)*r;
+    return a+(b-a)*drand48();
+}
+void PlotGraph()
+{	std::cout<<std::endl;
+	std::cout<<"set terminal pngcairo"<<std::endl;
+    std::cout<<"set output 'data/MomentumX.png'"<<std::endl;
+	std::cout<<"unset key"<<std::endl;
+	std::cout<<"set title 'Momento lineal (P_{x})'"<<std::endl;
+	std::cout<<"set xrange [*:*]"<<std::endl;
+  	std::cout<<"set yrange [*:*]"<<std::endl;
+ 	std::cout<<"set size ratio 1"<<std::endl;
+  	std::cout<<"set isosamples 12"<<std::endl;
+	std::cout<<"plot 'data/data.dat' using 1:2 with dots"<<std::endl;
+	std::cout<<"set terminal pngcairo"<<std::endl;
+    std::cout<<"set output 'data/MomentumY.png'"<<std::endl;
+	std::cout<<"unset key"<<std::endl;
+	std::cout<<"set title 'Momento lineal (P_{y})'"<<std::endl;
+	std::cout<<"set xrange [*:*]"<<std::endl;
+  	std::cout<<"set yrange [*:*]"<<std::endl;
+ 	std::cout<<"set size ratio 1"<<std::endl;
+  	std::cout<<"set isosamples 12"<<std::endl;
+	std::cout<<"plot 'data/data.dat' using 1:3 with points pointtype 7 pointsize 1"<<std::endl;
+	 
+
 }
 
 int main(int argc, char *argv[]){
@@ -42,6 +63,7 @@ int main(int argc, char *argv[]){
 	int films = std::stof(argv[5]);
 	
 	Particle *AllParticles[NParticles];
+	srand48(time(0));
 
 	if (NParticles ==2)
 	{
@@ -94,6 +116,7 @@ int main(int argc, char *argv[]){
         	if(it%films == 0)
 			{	
 				AllParticles[i]->Print();
+				out << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << std::endl;
 				
 			}
 			
@@ -106,9 +129,10 @@ int main(int argc, char *argv[]){
         if(it%films == 0)	
 			EndLine();
 
-		// out << Px << " " << Py  << " " << Ek << " " << Ep << std::endl;
+		 
 	}
 
 	out.close();
+	PlotGraph();
 	return 0;
 }	
