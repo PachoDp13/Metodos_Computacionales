@@ -3,9 +3,9 @@
 #include<fstream>
 
 
-void StartAnim(double limits, double delay)
+void StartAnim(double limits)
 {
-	std::cout<<"set terminal gif animate delay "<<delay <<std::endl;
+	std::cout<<"set terminal gif animate delay 1" <<std::endl;
     std::cout<<"set output 'data/Colisiones.gif'"<<std::endl;
 	std::cout<<"unset key"<<std::endl;
   	std::cout<<"set xrange [-"<<limits << ":"<<limits <<"]"<<std::endl;
@@ -69,6 +69,27 @@ void PlotGraph(double t)
   	std::cout<<"set isosamples 12"<<std::endl;
 	std::cout<<"plot 'data/data.dat' using 1:5 with dots"<<std::endl;
 
+	std::cout<<"set terminal pngcairo"<<std::endl;
+    std::cout<<"set output 'data/Energía mecánica.png'"<<std::endl;
+	std::cout<<"unset key"<<std::endl;
+	std::cout<<"set title 'Energía mecánica (E)'"<<std::endl;
+	std::cout<<"set xrange [0:"<<t<<"]"<<std::endl;
+  	std::cout<<"set yrange [0:*]"<<std::endl;
+ 	std::cout<<"set size ratio 1"<<std::endl;
+  	std::cout<<"set isosamples 12"<<std::endl;
+	std::cout<<"plot 'data/data.dat' using 1:6 with dots"<<std::endl;
+
+	std::cout<<"set terminal pngcairo"<<std::endl;
+    std::cout<<"set output 'data/Temperatura.png'"<<std::endl;
+	std::cout<<"unset key"<<std::endl;
+	std::cout<<"set title 'Temperatura (T)'"<<std::endl;
+	std::cout<<"set xrange [0:"<<t<<"]"<<std::endl;
+  	std::cout<<"set yrange [0:*]"<<std::endl;
+ 	std::cout<<"set size ratio 1"<<std::endl;
+  	std::cout<<"set isosamples 12"<<std::endl;
+	std::cout<<"plot 'data/data.dat' using 1:7 with dots"<<std::endl;
+
+
 }
 
 int main(int argc, char *argv[]){
@@ -85,7 +106,7 @@ int main(int argc, char *argv[]){
 
 	if (NParticles ==2)
 	{
-		Particle *p1 = new Particle(-10.0,4,4.0,0.0,10.0,5.0,0);
+		Particle *p1 = new Particle(-10.0,4.0,40.0,0.0,10.0,5.0,0);
 		p1->SetWallLimits(-limits,limits,-limits,limits);
 		Particle *p2 = new Particle(0.0,0,0.0,0,10.0,5.0,1);
 		p2->SetWallLimits(-limits,limits,-limits,limits);
@@ -108,9 +129,7 @@ int main(int argc, char *argv[]){
 	// Evolucion 
 	double time = 0.;
 	int it = 0;
-	int frames = (tmax/deltat)/fps;
-	int delay = (tmax/frames)*100;
-	StartAnim(limits, delay);
+	StartAnim(limits);
 	while (time < tmax)
 	{
 		double Ek = 0;
@@ -138,8 +157,8 @@ int main(int argc, char *argv[]){
 				double interaccion =0;
 				if (d < p1->getR() + p2->getR()) 
 				{
-					interaccion = p1->K*(pow(d,1.5));
-					Ep+=p1->K/2.5*(pow(d,2.5));
+					interaccion = p1->K*(pow(d,5));
+					Ep+=-(p1->K/6)*(pow(d,6));
 				}
 				if (d != 0)
 				{
@@ -159,17 +178,15 @@ int main(int argc, char *argv[]){
 			Px +=  AllParticles[i]->getM()*AllParticles[i]->getVx() ;
 			Py +=  AllParticles[i]->getM()*AllParticles[i]->getVy() ;
 			Ek += (0.5)*(AllParticles[i]->getM())*(pow(AllParticles[i]->getVx(),2)+pow(AllParticles[i]->getVy(),2));
+			
 		}
 		time += deltat;
 		it ++;
         if(it%fps == 0)
 		{
 			EndLine();
-			
-			
-			
 		}
-		out << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << std::endl;
+		out << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << " " << Ek+Ep  << std::endl;
 		
 		 
 	}
