@@ -22,7 +22,6 @@ class Particle{
 		void CheckWallLimits();
 		void Print();
 		double K = 100.;
-		double Interaccion(Particle *p_);
 		void Move(double t_, double deltat, double newA[]);
 	
 		double getX();
