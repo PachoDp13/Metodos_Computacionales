@@ -62,6 +62,7 @@ void Particle::Print(){
  std::cout <<" , "<<x<<"+"<<r<<"*cos(t),"<<y<<"+"<<r<<"*sin(t)";
 }
 
+
 void Particle::Move(double t_, double deltat, double newA[])
 {
 	t = t_;
@@ -71,22 +72,6 @@ void Particle::Move(double t_, double deltat, double newA[])
 	vy += (ay+newA[1])*(deltat/2);
 	ax = newA[0];
 	ay = newA[1];
-}
-
-double Particle::Interaccion(Particle *p_)
-{
-    double rx = x - p_->getX();
-    double ry = y - p_->getY();
-    double d = sqrt(pow(rx,2) + pow(ry,2));
-	
-    if (d < (r + p_->getR()) )
-	{
-		return K*(pow(d,5));
-	}
-	else
-	{
-		return 0;
-	}
 }
 
 

@@ -77,9 +77,10 @@ void PlotGraph(double t)
   	std::cout<<"set yrange [0:*]"<<std::endl;
  	std::cout<<"set size ratio 1"<<std::endl;
   	std::cout<<"set isosamples 12"<<std::endl;
-	std::cout<<"plot 'data/data.dat' using 1:6 with dots"<<std::endl;
+	std::cout<<"plot 'data/data.dat' using 1:(column(4)+column(5)) with dots"<<std::endl;
 
 }
+
 
 int main(int argc, char *argv[]){
 
@@ -112,8 +113,14 @@ int main(int argc, char *argv[]){
 			
 		}
 	}
-	std::ofstream out;
-    out.open("data/data.dat", std::ofstream::trunc);
+	std::ofstream out1;
+	std::ofstream out2;
+    out1.open("data/data.dat", std::ofstream::trunc);
+	out2.open("data/data2.dat", std::ofstream::trunc);
+
+
+    // allocate (no initializatoin)
+
 
 	// Evolucion 
 	double time = 0.;
@@ -125,6 +132,7 @@ int main(int argc, char *argv[]){
 		double Ep = 0;
 		double Px = 0;
 		double Py = 0;
+	
         if(it%fps == 0)
 		{
 			StartLine();
@@ -133,6 +141,7 @@ int main(int argc, char *argv[]){
 		double newA [NParticles][2];
 		for(int i = 0; i< NParticles; i++)
 		{
+			out2 << sqrt(pow(AllParticles[i]->getVx(),2) + pow(AllParticles[i]->getVy(),2)) << std::endl;
 			newA[i][0] = 0;
 			newA[i][1] = 0;
 		}
@@ -177,13 +186,16 @@ int main(int argc, char *argv[]){
         if(it%fps == 0)
 		{
 			EndLine();
+			
 		}
-		out << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << " " << Ek+Ep  << std::endl;
-		
+		out1 << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << " " << Ek+Ep  << std::endl;
+
 		 
 	}
+	
 
-	out.close();
+	out1.close();	
+	out2.close();
 	PlotGraph(tmax);
 	return 0;
 }	
