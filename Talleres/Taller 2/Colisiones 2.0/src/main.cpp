@@ -115,7 +115,7 @@ int main(int argc, char *argv[]){
 	}
 	std::ofstream out1;
 	std::ofstream out2;
-    out1.open("data/data.dat", std::ofstream::trunc);
+   	out1.open("data/data.dat", std::ofstream::trunc);
 	out2.open("data/data2.dat", std::ofstream::trunc);
 	out2 << NParticles << " " << tmax << " " << deltat << " "<< std::endl;
 
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]){
 		double Px = 0;
 		double Py = 0;
 	
-        if(it%fps == 0)
+        	if(it%fps == 0)
 		{
 			StartLine();
 		}
@@ -142,7 +142,6 @@ int main(int argc, char *argv[]){
 		double newA [NParticles][2];
 		for(int i = 0; i< NParticles; i++)
 		{
-			out2 << sqrt(pow(AllParticles[i]->getVx(),2) + pow(AllParticles[i]->getVy(),2)) << std::endl;
 			newA[i][0] = 0;
 			newA[i][1] = 0;
 		}
@@ -174,9 +173,17 @@ int main(int argc, char *argv[]){
 			AllParticles[i]->CheckWallLimits();
 			AllParticles[i]->Move(time,deltat, newA[i]);		    			
         	if(it%fps == 0)
-			{	
-				AllParticles[i]->Print();
-			}	
+		{	
+			AllParticles[i]->Print();
+			// Imprimimos las velocidades del conjunto de particulas para la generación del histograma. (Cada fps*10 iteraciones)
+			if (it%(fps*10)==0)
+			{
+				for(int i = 0; i< NParticles; i++)
+				{
+					out2 << sqrt(pow(AllParticles[i]->getVx(),2) + pow(AllParticles[i]->getVy(),2)) << std::endl; 
+				}
+			}
+		}	
 			Px +=  AllParticles[i]->getM()*AllParticles[i]->getVx() ;
 			Py +=  AllParticles[i]->getM()*AllParticles[i]->getVy() ;
 			Ek += (0.5)*(AllParticles[i]->getM())*(pow(AllParticles[i]->getVx(),2)+pow(AllParticles[i]->getVy(),2));
