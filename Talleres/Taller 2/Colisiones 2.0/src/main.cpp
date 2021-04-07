@@ -117,6 +117,7 @@ int main(int argc, char *argv[]){
 	std::ofstream out2;
     out1.open("data/data.dat", std::ofstream::trunc);
 	out2.open("data/data2.dat", std::ofstream::trunc);
+	out2 << NParticles << " " << tmax << " " << deltat << " "<< std::endl;
 
 
     // allocate (no initializatoin)
