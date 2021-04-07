@@ -107,7 +107,7 @@ int main(int argc, char *argv[]){
 	{	
 		for(int i = 0; i< NParticles; i++)
 		{
-			Particle *p = new Particle(Random(-46,46),Random(-46,46),Random(-5,5),Random(-5,5),10,4,i);
+			Particle *p = new Particle(Random(-46,46),Random(-46,46),Random(-50,50),Random(-50,50),10,4,i);
 			p->SetWallLimits(-limits,limits,-limits,limits);
 			AllParticles[i] = p;
 			
