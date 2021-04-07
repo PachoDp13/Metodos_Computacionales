@@ -6,7 +6,7 @@
 void StartAnim(double limits)
 {
 	std::cout<<"set terminal gif animate delay 1" <<std::endl;
-    std::cout<<"set output 'data/Colisiones.gif'"<<std::endl;
+   	std::cout<<"set output 'data/Colisiones.gif'"<<std::endl;
 	std::cout<<"unset key"<<std::endl;
   	std::cout<<"set xrange [-"<<limits << ":"<<limits <<"]"<<std::endl;
   	std::cout<<"set yrange [-"<<limits << ":"<<limits <<"]"<<std::endl;
@@ -30,7 +30,7 @@ double Random(double a, double b)
 void PlotGraph(double t)
 {	std::cout<<std::endl;
 	std::cout<<"set terminal pngcairo"<<std::endl;
-    std::cout<<"set output 'data/MomentumX.png'"<<std::endl;
+    	std::cout<<"set output 'data/MomentumX.png'"<<std::endl;
 	std::cout<<"unset key"<<std::endl;
 	std::cout<<"set title 'Momento lineal (P_{x})'"<<std::endl;
 	std::cout<<"set xrange [0:"<<t<<"]"<<std::endl;
@@ -40,7 +40,7 @@ void PlotGraph(double t)
 	std::cout<<"plot 'data/data.dat' using 1:2 with dots"<<std::endl;
 
 	std::cout<<"set terminal pngcairo"<<std::endl;
-    std::cout<<"set output 'data/MomentumY.png'"<<std::endl;
+    	std::cout<<"set output 'data/MomentumY.png'"<<std::endl;
 	std::cout<<"unset key"<<std::endl;
 	std::cout<<"set title 'Momento lineal (P_{y})'"<<std::endl;
 	std::cout<<"set xrange [0:"<<t<<"]"<<std::endl;
@@ -50,7 +50,7 @@ void PlotGraph(double t)
 	std::cout<<"plot 'data/data.dat' using 1:3 with dots"<<std::endl;
 
 	std::cout<<"set terminal pngcairo"<<std::endl;
-    std::cout<<"set output 'data/Energía cinética.png'"<<std::endl;
+    	std::cout<<"set output 'data/Energía cinética.png'"<<std::endl;
 	std::cout<<"unset key"<<std::endl;
 	std::cout<<"set title 'Energía cinética (E_{k})'"<<std::endl;
 	std::cout<<"set xrange [0:"<<t<<"]"<<std::endl;
@@ -60,7 +60,7 @@ void PlotGraph(double t)
 	std::cout<<"plot 'data/data.dat' using 1:4 with dots"<<std::endl;
 	 
 	std::cout<<"set terminal pngcairo"<<std::endl;
-    std::cout<<"set output 'data/Energía potencial.png'"<<std::endl;
+    	std::cout<<"set output 'data/Energía potencial.png'"<<std::endl;
 	std::cout<<"unset key"<<std::endl;
 	std::cout<<"set title 'Energía potencial (E_{p})'"<<std::endl;
 	std::cout<<"set xrange [0:"<<t<<"]"<<std::endl;
@@ -70,7 +70,7 @@ void PlotGraph(double t)
 	std::cout<<"plot 'data/data.dat' using 1:5 with dots"<<std::endl;
 
 	std::cout<<"set terminal pngcairo"<<std::endl;
-    std::cout<<"set output 'data/Energía mecánica.png'"<<std::endl;
+   	std::cout<<"set output 'data/Energía mecánica.png'"<<std::endl;
 	std::cout<<"unset key"<<std::endl;
 	std::cout<<"set title 'Energía mecánica (E)'"<<std::endl;
 	std::cout<<"set xrange [0:"<<t<<"]"<<std::endl;
@@ -85,12 +85,14 @@ void PlotGraph(double t)
 int main(int argc, char *argv[]){
 
 	//Parámetros de entrada:
+	
 	int NParticles = std::stof(argv[1]);
 	double tmax = std::stof(argv[2]);
 	double deltat = std::stof(argv[3]);
 	double limits = std::stof(argv[4]);
 	int fps = std::stof(argv[5]);
 	
+	//Inicializamos y llenamos nuestra lista de partículas.
 	Particle *AllParticles[NParticles];
 	srand48(time(0));
 
@@ -110,40 +112,44 @@ int main(int argc, char *argv[]){
 			Particle *p = new Particle(Random(-46,46),Random(-46,46),Random(-50,50),Random(-50,50),10,4,i);
 			p->SetWallLimits(-limits,limits,-limits,limits);
 			AllParticles[i] = p;
-			
 		}
 	}
+	// Inicializamos los archivos que exportaremos con los datos generados.
 	std::ofstream out1;
 	std::ofstream out2;
-    out1.open("data/data.dat", std::ofstream::trunc);
+    	out1.open("data/data.dat", std::ofstream::trunc);
 	out2.open("data/data2.dat", std::ofstream::trunc);
 
 	out2 << NParticles << " " << tmax << " " << deltat << " "<< std::endl;
-    // allocate (no initializatoin)
 
 
-	// Evolucion 
+	// Iniciamos la evolución del sistema.
+	
 	double time = 0.;
 	int it = 0;
 	StartAnim(limits);
 	while (time < tmax)
-	{
+	{	
+		// Iniciamos las variables que exportaremos en el archivo data.dat
 		double Ek = 0;
 		double Ep = 0;
 		double Px = 0;
 		double Py = 0;
 	
-        if(it%fps == 0)
+        	if(it%fps == 0)
 		{
 			StartLine();
 		}
 		
+		// Iniciamos las aceleraciones de cada partícula del sistema.
 		double newA [NParticles][2];
 		for(int i = 0; i< NParticles; i++)
 		{
 			newA[i][0] = 0;
 			newA[i][1] = 0;
 		}
+		// Verificamos las interacciones entre partículas para calcular las aceleraciones de cada una de ellas.
+		
 		for(int i = 0; i< NParticles; i++)
 		{	
 			for(int j = i+1;j < NParticles; j++)
@@ -169,12 +175,17 @@ int main(int argc, char *argv[]){
 					
 				}
 			}
+			// Verificamos los límites de la caja y movemos cada una de las partículas con su nueva acelaración utilizando la integración de Verlet.
+			
 			AllParticles[i]->CheckWallLimits();
-			AllParticles[i]->Move(time,deltat, newA[i]);		    			
-        	if(it%fps == 0)
+			AllParticles[i]->Move(time,deltat, newA[i]);	
+			
+        		if(it%fps == 0)
 			{	
 				AllParticles[i]->Print();
 			}	
+			// Actualizamos las variables.
+			
 			Px +=  AllParticles[i]->getM()*AllParticles[i]->getVx() ;
 			Py +=  AllParticles[i]->getM()*AllParticles[i]->getVy() ;
 			Ek += (0.5)*(AllParticles[i]->getM())*(pow(AllParticles[i]->getVx(),2)+pow(AllParticles[i]->getVy(),2));
@@ -186,6 +197,7 @@ int main(int argc, char *argv[]){
 		{
 			EndLine();			
 		}
+		
 		// Imprimimos las velocidades del conjunto de particulas para la generación del histograma. (Cada fps/10 iteraciones)
 		if (it%(fps/10)==0)
 		{
@@ -194,6 +206,7 @@ int main(int argc, char *argv[]){
 				out2 << sqrt(pow(AllParticles[i]->getVx(),2) + pow(AllParticles[i]->getVy(),2)) << std::endl; 
 			}
 		}
+		// Imprimimos los datos para la generación de las gráficas.
 		out1 << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << " " << Ek+Ep  << std::endl;
 
 		 
@@ -202,6 +215,7 @@ int main(int argc, char *argv[]){
 
 	out1.close();	
 	out2.close();
+	// Graficamos
 	PlotGraph(tmax);
 	return 0;
 }	
