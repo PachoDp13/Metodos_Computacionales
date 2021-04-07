@@ -175,14 +175,6 @@ int main(int argc, char *argv[]){
         	if(it%fps == 0)
 		{	
 			AllParticles[i]->Print();
-			// Imprimimos las velocidades del conjunto de particulas para la generación del histograma. (Cada fps*10 iteraciones)
-			if (it%(fps*10)==0)
-			{
-				for(int i = 0; i< NParticles; i++)
-				{
-					out2 << sqrt(pow(AllParticles[i]->getVx(),2) + pow(AllParticles[i]->getVy(),2)) << std::endl; 
-				}
-			}
 		}	
 			Px +=  AllParticles[i]->getM()*AllParticles[i]->getVx() ;
 			Py +=  AllParticles[i]->getM()*AllParticles[i]->getVy() ;
@@ -191,10 +183,17 @@ int main(int argc, char *argv[]){
 		}
 		time += deltat;
 		it ++;
-        if(it%fps == 0)
+        	if(it%fps == 0)
 		{
 			EndLine();
-			
+		}
+		// Imprimimos las velocidades del conjunto de particulas para la generación del histograma. (Cada fps/10 iteraciones)
+		if (it%(fps/10)==0)
+		{
+			for(int i = 0; i< NParticles; i++)
+			{
+				out2 << sqrt(pow(AllParticles[i]->getVx(),2) + pow(AllParticles[i]->getVy(),2)) << std::endl; 
+			}
 		}
 		out1 << time << " " << Px << " " << Py  << " " << Ek << " " << Ep << " " << Ek+Ep  << std::endl;
 
