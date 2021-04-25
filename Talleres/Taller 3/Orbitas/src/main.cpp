@@ -13,9 +13,13 @@ int main(int argc, char *argv[]){
 
 	// Output File for the Energy and Momentum
 	std::string Folder = "data/";
-	Folder += "Totales.dat";
-	File = new std::ofstream[1];
-	File[0].open(Folder.c_str(), std::ofstream::trunc);
+	std::string File1 = Folder + "Totales.dat";
+	std::string File2 = Folder + "Afelio.dat";
+	std::string File3 = Folder + "Perihelio.dat";
+	File = new std::ofstream[3];
+	File[0].open(File1.c_str(), std::ofstream::trunc);
+	File[1].open(File2.c_str(), std::ofstream::trunc);
+	File[2].open(File3.c_str(), std::ofstream::trunc);
 
 
 	// Parametros de la simulacion
@@ -50,7 +54,7 @@ int main(int argc, char *argv[]){
 	double e = 0.205630;
     double a =  0.387098;
 
-	double x0T = abs(a*(1.+e));
+	double x0T = a*(1.+e);
 	double vy0T = sqrt(G*(1-e)/(a*(1+e)));
 	
 	
@@ -67,12 +71,15 @@ int main(int argc, char *argv[]){
  	int itmaxten = itmax/10;
 
 
- 	double rmin = 0.;
+ 	double rmin = a*(1.-e)+0.000001;
  	double Thetamin = 0.;
+	double rmax = 0.;
+ 	double Thetamax = 0.;
  	double Periodo = 50.;
  		
 	// Evolucion
 	if(Animate) A->NewAnim();
+
 	while (t <= tmax){
 
     double TEk = 0.;
@@ -80,30 +87,40 @@ int main(int argc, char *argv[]){
     double TPx = 0.;
     double TPy = 0.;
 
-	if(Animate && it%fps == 0){
+	if(Animate && it%fps == 0)
+	{
     	A->StartLine();
 	}
-
-	for(int i = 0; i< NParticles; i++){
-
-	AllParticles[i]->ResetForce();
+	// Iniciamos las aceleraciones de cada partícula del sistema.
 
 
-		for(int j = 0; j < NParticles; j++){
-			if (j == 1) continue;
-			if (i!=j){
+	for(int i = 0; i< NParticles; i++)
+	{
+		AllParticles[i]->ResetForce();
+		for(int j = 0;j < NParticles; j++)
+		{	
+			if (i!=j)
+			{
 			AllParticles[i]->GetForce(*AllParticles[j],Fuerza);
-			//AllParticles[i]->Print();
 			}
 		}
 	
 	AllParticles[i]->MoveVerlet(t,deltat,it);
-	
-	if (AllParticles[1]->GetR() > rmin){
+
+	if (AllParticles[1]->GetR() > rmax)
+	{
+		rmax = AllParticles[1]->GetR();
+		Thetamax = AllParticles[1]->GetTheta();
+		Periodo = t;
+		File[1]  << std::setprecision(12) << 2.0*Periodo << " " << rmax << " " << Thetamax << std::endl;
+	}
+
+	if (AllParticles[1]->GetR() < rmin)
+	{
 		rmin = AllParticles[1]->GetR();
 		Thetamin = AllParticles[1]->GetTheta();
 		Periodo = t;
-		std::cout << std::setprecision(12) << 2.0*Periodo << " " << rmin << " " << Thetamin << std::endl;
+		File[2]  << std::setprecision(12) << 2.0*Periodo << " " << rmin << " " << Thetamin << std::endl;
 	}
 	
 	
@@ -154,6 +171,8 @@ int main(int argc, char *argv[]){
     }
 
     File[0].close();
+	File[1].close();
+	File[2].close();
 
 
 	return 0;

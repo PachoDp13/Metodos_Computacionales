@@ -51,15 +51,30 @@ Ep = 0.;
 }
 
 
-void Particle::GetForce(Particle &p, int type){
+void Particle::GetForce(Particle &p, int type)
+{
 
 	d = Getd(x,y,p.x,p.y);
 	
- 
-	if(type == 1){
+	if(type == 1)
+	{
+		if(d >= 2.0*r)
+		{
+		Fn = (-G*m*p.m/pow(d,2));
 
-		if(d >= 2.0*r){
+		Fx += -Fn*(p.x-x)/d;
+		Fy += -Fn*(p.y-y)/d;
 
+		ax += Fx/m;
+		ay += Fy/m;
+
+		Ep = -G*m*p.m/pow(d,1);
+		}
+	}
+	else if( type ==2)
+	{
+		if(d >= 2.0*r)
+		{
 		Fn = (-G*m*p.m/pow(d,2))*(1+((1.1e-8)/pow(d,2)));
 
 		Fx += -Fn*(p.x-x)/d;
@@ -69,49 +84,23 @@ void Particle::GetForce(Particle &p, int type){
 		ay += Fy/m;
 
 		Ep = -G*m*p.m/pow(d,1);
-
 		}
-
 	}
-
 }
 
 
-void Particle::MoveVerlet(double t_, double deltat, int it){
 
-	t = t_;
+void Particle::MoveVerlet(double t_, double deltat, int it)
+{
 
 
-	if(it == 0){
-
-		xp = x;
-		yp = y;
-
-		x = xp + vx*deltat;
-		y = yp + vy*deltat;
-
-	}
-
-	else{
-
-		
-		double xf = 2.0*x - xp + ax*pow(deltat,2);
-		double yf = 2.0*y - yp + ay*pow(deltat,2);
-
-		// actualizamos velocidad
-		vx = (xf-xp)/(2.*deltat);
-		vy = (yf-yp)/(2.*deltat);
-
-		px = m*vx;
-		py = m*vy;
-
-		xp = x;
-		yp = y;
-
-		x = xf;
-		y = yf;
-
-	}
+		t = t_;
+		x += (vx*deltat) + (0.5*axp*pow(deltat,2));
+		y += (vy*deltat) + (0.5*ayp*pow(deltat,2));
+		vx += (ax+axp)*(deltat/2);
+		vy += (ay+ayp)*(deltat/2);
+		axp = ax;
+		ayp = ay;
 
 }
 
@@ -162,9 +151,9 @@ double Particle::GetPy(){
 	return py;
 }
 
-double Particle::GetR(){
+double Particle::GetR()
+{
 	return sqrt(pow(x,2)+pow(y,2));
-
 }
 
 

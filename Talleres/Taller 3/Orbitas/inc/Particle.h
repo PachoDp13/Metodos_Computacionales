@@ -50,10 +50,10 @@ class Particle{
 		double t;
 		double x,y;
 
-		double xp,yp; //Para verlet
+		double px,py; 
 
 		double vx,vy;
-		double px,py;
+		double axp,ayp; //Para verlet
 		double ax,ay;
 		double Fx,Fy;
 		double Fn;
