@@ -30,7 +30,7 @@ double Random(double a, double b)
 void PlotGraph(double t)
 {	std::cout<<std::endl;
 	std::cout<<"set terminal pngcairo"<<std::endl;
-    	std::cout<<"set output 'data/MomentumX.png'"<<std::endl;
+	std::cout<<"set output 'data/MomentumX.png'"<<std::endl;
 	std::cout<<"unset key"<<std::endl;
 	std::cout<<"set title 'Momento lineal (P_{x})'"<<std::endl;
 	std::cout<<"set xrange [0:"<<t<<"]"<<std::endl;
