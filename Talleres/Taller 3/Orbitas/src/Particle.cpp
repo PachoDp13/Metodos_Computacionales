@@ -38,7 +38,8 @@ Particle::~Particle(){
 // Methods
 
 
-double Particle::Getd(double x1_,double y1_,double x2_,double y2_){
+double Particle::Getd(double x1_,double y1_,double x2_,double y2_)
+{
 double d=0.;
 d = sqrt(pow( x2_-x1_ ,2) + pow( y2_-y1_ ,2));
 return d;
@@ -83,7 +84,7 @@ void Particle::GetForce(Particle &p, int type)
 		ax += Fx/m;
 		ay += Fy/m;
 
-		Ep = -G*m*p.m/pow(d,1);
+		Ep = -G*m*p.m/pow(d,1)*(1+((1.1e-8)/pow(d,2)));
 		}
 	}
 }
@@ -92,15 +93,13 @@ void Particle::GetForce(Particle &p, int type)
 
 void Particle::MoveVerlet(double t_, double deltat, int it)
 {
-
-
-		t = t_;
-		x += (vx*deltat) + (0.5*axp*pow(deltat,2));
-		y += (vy*deltat) + (0.5*ayp*pow(deltat,2));
-		vx += (ax+axp)*(deltat/2);
-		vy += (ay+ayp)*(deltat/2);
-		axp = ax;
-		ayp = ay;
+	t = t_;
+	x += (vx*deltat) + (0.5*axp*pow(deltat,2));
+	y += (vy*deltat) + (0.5*ayp*pow(deltat,2));
+	vx += (ax+axp)*(deltat/2);
+	vy += (ay+ayp)*(deltat/2);
+	axp = ax;
+	ayp = ay;
 
 }
 

@@ -1,25 +1,19 @@
 #include <../inc/Particle.h>
 #include <../inc/Anim.h>
-
+#define pi 2.0*asin(1.0)
 
 
 std::ofstream *File;
 
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 
 	// Seed
 	srand48(time(0));
 
-	// Output File for the Energy and Momentum
-	std::string Folder = "data/";
-	std::string File1 = Folder + "Totales.dat";
-	std::string File2 = Folder + "Afelio.dat";
-	std::string File3 = Folder + "Perihelio.dat";
-	File = new std::ofstream[3];
-	File[0].open(File1.c_str(), std::ofstream::trunc);
-	File[1].open(File2.c_str(), std::ofstream::trunc);
-	File[2].open(File3.c_str(), std::ofstream::trunc);
+	
+
 
 
 	// Parametros de la simulacion
@@ -35,8 +29,7 @@ int main(int argc, char *argv[]){
 
 	// objetos
 	Anim *A = new Anim(limits);
-  //  A->StartLine();
-  //  A->EndLine();
+
 	Particle *AllParticles[NParticles];
 
 	// G en unidades Gaussianas
@@ -54,125 +47,183 @@ int main(int argc, char *argv[]){
 	double e = 0.205630;
     double a =  0.387098;
 
-	double x0T = a*(1.+e);
-	double vy0T = sqrt(G*(1-e)/(a*(1+e)));
-	
-	
-	Particle *p1 = new Particle(  0., 0., 0., 0., 1., 0.1, 0);
-   	Particle *p2 = new Particle(  x0T, 0., 0., vy0T, mM, 0.01, 1);
-   	
-   	AllParticles[0] = p1;
-   	AllParticles[1] = p2;
-    
+ 	int itmax = int(tmax/deltat);
+ 	int itmaxten = itmax/10;
 	int it = 0;
  	double t = 0.;
 
- 	int itmax = int(tmax/deltat);
- 	int itmaxten = itmax/10;
+	// Evolucion para simulación
+	if(Animate)
+	{	
+		double x0T = a*(1.+e);
+		double vy0T = sqrt(G*(1-e)/(a*(1+e)));
+		Particle *p1 = new Particle(  0., 0., 0., 0., 1., 0.1, 0);
+   		Particle *p2 = new Particle(  x0T, 0., 0., vy0T, mM, 0.01, 1);
+   	
+   		AllParticles[0] = p1;
+   		AllParticles[1] = p2;
+    
+		
 
+		// Output File for the Energy and Momentum
+		std::string Folder = "data/";
+		std::string File1 = Folder + "Totales.dat";
+		File = new std::ofstream[2];
+		File[0].open(File1.c_str(), std::ofstream::trunc);
 
- 	double rmin = a*(1.-e)+0.000001;
- 	double Thetamin = 0.;
-	double rmax = 0.;
- 	double Thetamax = 0.;
- 	double Periodo = 50.;
- 		
-	// Evolucion
-	if(Animate) A->NewAnim();
+	 	A->NewAnim();
 
-	while (t <= tmax){
+		while (t <= tmax)
+		{
 
-    double TEk = 0.;
-    double TEp = 0.;
-    double TPx = 0.;
-    double TPy = 0.;
+    	double TEk = 0.;
+    	double TEp = 0.;
+    	double TPx = 0.;
+    	double TPy = 0.;
 
-	if(Animate && it%fps == 0)
-	{
-    	A->StartLine();
-	}
-	// Iniciamos las aceleraciones de cada partícula del sistema.
-
-
-	for(int i = 0; i< NParticles; i++)
-	{
-		AllParticles[i]->ResetForce();
-		for(int j = 0;j < NParticles; j++)
-		{	
-			if (i!=j)
-			{
-			AllParticles[i]->GetForce(*AllParticles[j],Fuerza);
-			}
+		if(it%fps == 0)
+		{
+    		A->StartLine();
 		}
+
+
+		// Iniciamos las aceleraciones de cada partícula del sistema.
+		for(int i = 0; i< NParticles; i++)
+		{
+			AllParticles[i]->ResetForce();
+			for(int j = 0;j < NParticles; j++)
+			{	
+				if (i!=j)
+				{
+					AllParticles[i]->GetForce(*AllParticles[j],Fuerza);
+				}
+			}
 	
-	AllParticles[i]->MoveVerlet(t,deltat,it);
-
-	if (AllParticles[1]->GetR() > rmax)
-	{
-		rmax = AllParticles[1]->GetR();
-		Thetamax = AllParticles[1]->GetTheta();
-		Periodo = t;
-		File[1]  << std::setprecision(12) << 2.0*Periodo << " " << rmax << " " << Thetamax << std::endl;
-	}
-
-	if (AllParticles[1]->GetR() < rmin)
-	{
-		rmin = AllParticles[1]->GetR();
-		Thetamin = AllParticles[1]->GetTheta();
-		Periodo = t;
-		File[2]  << std::setprecision(12) << 2.0*Periodo << " " << rmin << " " << Thetamin << std::endl;
-	}
+		AllParticles[i]->MoveVerlet(t,deltat,it);
 	
+		TEk += AllParticles[i]->GetEk();
+		TEp += AllParticles[i]->GetEp();
+		TPx += AllParticles[i]->GetPx();
+		TPy += AllParticles[i]->GetPy();
 	
-	
-	TEk += AllParticles[i]->GetEk();
-	TEp += AllParticles[i]->GetEp();
-	TPx += AllParticles[i]->GetPx();
-	TPy += AllParticles[i]->GetPy();
-	
-	if(Animate && it%fps == 0){
-    	AllParticles[i]->Print();	 
-	}
+		if(Animate && it%fps == 0)
+		{
+    		AllParticles[i]->Print();	 
+		}
 
 
-	if(it%fps == 0)
-		AllParticles[i]->WritetoFile();
-	}
+		if(it%fps == 0)
+			AllParticles[i]->WritetoFile();
+		}
 
-	TEp = 0.5*TEp; // Para evitar sumas repetidas
+		TEp = 0.5*TEp; 
 
-	if(it%fps == 0)
-	File[0] << t << " " << TEk << " " << TEp << " " << TEk + TEp << " " << TPx << " " << TPy << std::endl;
-
-  
+		if(it%fps == 0)
+			File[0] << t << " " << TEk << " " << TEp << " " << TEk + TEp << " " << TPx << " " << TPy << std::endl;	
   	
-	if(Animate && it%fps == 0){
-    	A->EndLine();
-	}
+		if(Animate && it%fps == 0)
+		{
+    		A->EndLine();
+		}
 
+		t += deltat;
+		it ++; 
+	}
+	 // Closing the data files
+    	for(int i = 0; i < NParticles; i++)
+		{
+    		AllParticles[i]->CloseFile();
+    	}
+
+    	File[0].close();
+	}
+	else
+	{
+		std::string Folder = "data/";
+		std::string File1 = Folder + "Perihelio.dat";
+		File = new std::ofstream[2];
+		File[0].open(File1.c_str(), std::ofstream::trunc);
+
+		// Datos de iteraciones del presente, el futuro y el "futuro" del futuro
+
+		double r = 0.0; double rf = 0.0; double rf2 = 0.0;
+    	double x = 0.0; double xf = 0.0; double xf2 = 0.0;
+   		double y = 0.0; double yf = 0.0; double yf2 = 0.0;
+    	double ax = 0.0; double afx = 0.0; double af2x = 0.0;
+    	double ay = 0.0; double afy = 0.0; double af2y = 0.0;
+    	double vx = 0.0; double vfx = 0.0; double vf2x = 0.0;  
+    	double vy = 0.0; double vfy = 0.0; double vf2y = 0.0;  
 	
-	if(!Animate){
+ 		double rmin = a*(1.-e);
+ 		double thetamin = 0.;
+ 		double Periodo = 0.24109;
+		double alpha = 1.1e-8;
+
+  		x = a*(1.+e);
+		vy = sqrt(G*(1-e)/(a*(1+e)));
+		while (t <= tmax)
+		{
+			// Realizamos la integración de Verlet para los tres momentos (Presente, futuro y "futuro" del futuro)
+			//Mi presente
+	  		r = sqrt(x*x + y*y); 
+      		ax = -(G/pow(r,2))*(1.0+(alpha/pow(r,2)))*(x/r);  
+     		ay = -(G/pow(r,2))*(1.0+(alpha/pow(r,2)))*(y/r);  
+    
+      		//Mi futuro
+      		xf = x + (vx*deltat) + ax*(pow(deltat,2)/2); 
+      		yf = y + (vy*deltat) + ay*(pow(deltat,2)/2); 
+      		rf = sqrt(pow(xf,2)+ pow(yf,2));  
+      		afx = -(G/pow(rf,2))*(1.0+(alpha/pow(rf,2)))*(xf/rf);  
+     		afy = -(G/pow(rf,2))*(1.0+(alpha/pow(rf,2)))*(yf/rf);  
+      		vfx = vx + (ax+afx)*(deltat/2); 
+      		vfy = vy + (ay+afy)*(deltat/2); 
+
+      		//El futuro de mi futuro
+      		xf2 = xf + (vfx*deltat) + afx*(pow(deltat,2)/2);  
+      		yf2 = yf + (vfy*deltat) + afy*(pow(deltat,2)/2);  
+      		rf2 = sqrt(pow(xf2,2)+ pow(yf2,2));  
+      		af2x = -(G/pow(rf2,2))*(1.0+(alpha/pow(rf2,2)))*(xf2/rf2);   
+      		af2y = -(G/pow(rf2,2))*(1.0+(alpha/pow(rf2,2)))*(yf2/rf2);  
+      		vf2x = vfx + (afx+af2x)*(deltat/2); 
+      		vf2y = vfy + (afy+af2y)*(deltat/2); 
+
+      		//Me actualizo
+      		x = xf;
+      		y = yf;
+      		vx = vfx;
+      		vy = vfy;
+    
+		// Imprimimos los datos que analizaremos para la preseción de la órbita
+		if( r > rf &&  rf < rf2 )
+		{	
+			if ( (xf > 0.) && (yf > 0.) )
+			thetamin  = atan(yf/xf);
+			else if( (xf < 0.) && (yf > 0.) )
+			thetamin  = atan(yf/xf) + 2.0*asin(1.0);
+			else if( (xf < 0.) && (yf < 0.) )
+			thetamin  = atan(yf/xf) + 2.0*asin(1.0);
+			else
+			thetamin = atan( yf/xf ) + 4.0*asin(1.0);
+
+			rmin = rf;
+			thetamin = thetamin*180./(2.0*asin(1.0));
+			Periodo = t;
+
+			File[0]  << std::setprecision(12) << Periodo << " " << rmin  << " " << thetamin << std::endl;
+		}
+
 		if ( it%itmaxten == 0 )
 			std::cout << 10*it/double(itmaxten) << "%-" << std::flush;
 		if ( it == itmax)
 			std::cout << std::endl; 
-	}	
 
-	t += deltat;
-	it ++;
-        
+		it ++;
+        t = t+ deltat; 	
+		}
+
+    	File[0].close();
+
 	}
-
-	
-
-	 // Closing the data files
-    for(int i = 0; i < NParticles; i++){
-    	AllParticles[i]->CloseFile();
-    }
-
-    File[0].close();
-	File[1].close();
-	File[2].close();
 
 
 	return 0;

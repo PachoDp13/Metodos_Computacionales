@@ -21,7 +21,7 @@ Anim::~Anim(){
 void Anim::NewAnim(){
   limits = "[-"+std::to_string(lim)+":"+std::to_string(lim)+"]";
   std::cout<<"set terminal gif animate delay 1" <<std::endl;
-  std::cout<<"set output 'Orbitas.gif'"<<std::endl;
+  std::cout<<"set output 'data/Orbitas.gif'"<<std::endl;
   std::cout<<"unset key"<<std::endl;
   std::cout<<"set xrange "+limits<<std::endl;
   std::cout<<"set yrange "+limits<<std::endl;
