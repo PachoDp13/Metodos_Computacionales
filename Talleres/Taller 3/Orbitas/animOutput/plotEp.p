@@ -1,5 +1,5 @@
 set terminal png size 500,500
-set output 'Energia_Potencial.png'
+set output 'data/Energia_Potencial.png'
 set title 'Energía Potencial'
 set xlabel 't'
 set ylabel 'Ep'
